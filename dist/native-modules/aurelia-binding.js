@@ -2548,6 +2548,24 @@ export var Scanner = function () {
   return Scanner;
 }();
 
+export function addIdentifierCharacters(chars) {
+  var codes = new Set();
+  for (var i = 0; i < chars.length; i++) {
+    codes.add(chars.codePointAt(i));
+  }
+
+  var _isIdentifierStart = isIdentifierStart;
+  var _isIdentifierPart = isIdentifierPart;
+
+  isIdentifierStart = function isIdentifierStart(code) {
+    return _isIdentifierStart(code) || codes.has(code);
+  };
+
+  isIdentifierPart = function isIdentifierPart(code) {
+    return _isIdentifierPart(code) || codes.has(code);
+  };
+}
+
 var OPERATORS = {
   'undefined': 1,
   'null': 1,
@@ -2636,13 +2654,13 @@ function isWhitespace(code) {
   return code >= $TAB && code <= $SPACE || code === $NBSP;
 }
 
-function isIdentifierStart(code) {
+var isIdentifierStart = function isIdentifierStart(code) {
   return $a <= code && code <= $z || $A <= code && code <= $Z || code === $_ || code === $$;
-}
+};
 
-function isIdentifierPart(code) {
+var isIdentifierPart = function isIdentifierPart(code) {
   return $a <= code && code <= $z || $A <= code && code <= $Z || $0 <= code && code <= $9 || code === $_ || code === $$;
-}
+};
 
 function isDigit(code) {
   return $0 <= code && code <= $9;
